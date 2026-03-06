@@ -1,0 +1,11 @@
+@FileProcessingApi_HostAddress = http://localhost:5166
+
+GET {{FileProcessingApi_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{FileProcessingApi_HostAddress}}/todos/1
+Accept: application/json
+
+###

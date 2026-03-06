@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="FileProcessingApi/FileProcessingApi.csproj" />
+  <Project Path="FileProcessingAppLogic/FileProcessingApplication.csproj" Id="634dae98-acde-4438-b616-9a8cc3563bc1" />
+  <Project Path="FileProcessingCore/FileProcessingCore.csproj" />
+  <Project Path="FileProcessingRepository/FileProcessingRepository.csproj" Id="de19e8ce-53af-4f52-8ea7-93d9bf18eab7" />
+</Solution>
