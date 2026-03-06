@@ -1,6 +1,6 @@
 ﻿namespace FileProcessingCore;
 
-public class FileInfo
+public class FileInfoModel
 {
   public Guid Id { get; set; }
   public string FileName { get; set; } = "";

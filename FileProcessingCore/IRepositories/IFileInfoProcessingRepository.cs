@@ -2,7 +2,7 @@
 
 public interface IFileInfoProcessingRepository
 {
-  Task<System.IO.FileInfo> CreateAsync(System.IO.FileInfo fileInfo, CancellationToken cancellationToken = default);
-  Task<System.IO.FileInfo?> GetAsync(int id, CancellationToken cancellationToken = default);
-  Task<IEnumerable<System.IO.FileInfo>> GetAllAsync(CancellationToken cancellationToken = default);
+  Task<FileInfoModel> CreateAsync(FileInfoModel fileInfo, CancellationToken cancellationToken = default);
+  Task<FileInfoModel?> GetAsync(int id, CancellationToken cancellationToken = default);
+  Task<IEnumerable<FileInfoModel>> GetAllAsync(CancellationToken cancellationToken = default);
 }
