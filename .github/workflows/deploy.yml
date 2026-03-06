@@ -44,3 +44,10 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           package: ./publish.zip
+     
+      - name: Set Startup Command (Linux Free Plan)
+        run: |
+          az webapp config set \
+            --resource-group MyFileProcessingRG \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --startup-file "dotnet FileProcessingApi.dll"
