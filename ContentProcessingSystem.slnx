@@ -3,6 +3,7 @@
   <Project Path="FileProcessingAppLogic/FileProcessingApplication.csproj" Id="634dae98-acde-4438-b616-9a8cc3563bc1" />
   <Project Path="FileProcessingCore/FileProcessingCore.csproj" />
   <Project Path="FileProcessingEventContracts/FileProcessingEventContracts.csproj" Id="452800d4-82fc-4b51-a8bb-8cd3e0ee20cd" />
+  <Project Path="FileProcessingFunction/FileProcessingFunction.csproj" Id="ed60442b-2ba3-477b-9f30-ca8d574adf36" />
   <Project Path="FileProcessingPublisher/FileProcessingPublisher.csproj" Id="d36113d3-8493-4ed7-b7e6-5e2378a956c2" />
   <Project Path="FileProcessingRepository/FileProcessingRepository.csproj" Id="de19e8ce-53af-4f52-8ea7-93d9bf18eab7" />
   <Project Path="FileProcessingStorage/FileProcessingStorage.csproj" Id="fa01f126-2637-4466-a67e-886a76eb5d6a" />

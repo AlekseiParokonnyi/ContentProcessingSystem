@@ -1,13 +1,19 @@
 ﻿using FileProcessingCore.IPublisher;
+using FileProcessingEventContracts;
+using System.Text.Json;
 
 namespace FileProcessingPublisher
 {
   public class BusPublisher : IBusPublisher
   {
-    public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
     {
-      // Implementation goes here
-      return Task.CompletedTask;
+      //var client = new ServiceBusClient(connectionString);
+      //var sender = client.CreateSender("orders-queue");
+
+      //var message = new ServiceBusMessage(JsonSerializer.Serialize(@event));
+
+      //await sender.SendMessageAsync(message);
     }
   }
 }

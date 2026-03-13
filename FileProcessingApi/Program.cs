@@ -47,10 +47,13 @@ filesApi.MapPost("", async (IFormFile file,
   var result = await fileProcessingService.StoreFileAsync(file.FileName, stream, ct);
 
   return Results.Ok(result);
-});
+})
+.Produces(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status400BadRequest);
 
 filesApi.MapGet("/", (IFileProcessingService service, CancellationToken ct)
-  => service.GetAllFilesAsync(ct));
+  => service.GetAllFilesAsync(ct))
+  .Produces(StatusCodes.Status200OK);
 
 filesApi.MapGet("/{id}", async Task<Results<FileStreamHttpResult, NotFound>> (
     Guid id,
