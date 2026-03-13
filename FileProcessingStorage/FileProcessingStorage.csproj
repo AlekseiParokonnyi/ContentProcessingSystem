@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FileProcessingCore\FileProcessingCore.csproj" />
-    <ProjectReference Include="..\FileProcessingEventContracts\FileProcessingEventContracts.csproj" />
   </ItemGroup>
 
 </Project>

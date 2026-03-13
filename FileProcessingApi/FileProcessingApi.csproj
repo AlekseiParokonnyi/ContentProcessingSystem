@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FileProcessingAppLogic\FileProcessingApplication.csproj" />
     <ProjectReference Include="..\FileProcessingRepository\FileProcessingRepository.csproj" />
+    <ProjectReference Include="..\FileProcessingStorage\FileProcessingStorage.csproj" />
   </ItemGroup>
   
 </Project>
