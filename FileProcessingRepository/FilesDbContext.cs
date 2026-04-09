@@ -14,6 +14,7 @@ public class FilesDbContext : DbContext
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
+    modelBuilder.HasDefaultSchema("files");
     modelBuilder.ApplyConfigurationsFromAssembly(typeof(FilesDbContext).Assembly);
   }
 }

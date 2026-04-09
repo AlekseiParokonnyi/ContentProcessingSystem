@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FileProcessingCore\FileProcessingCore.csproj" />
   </ItemGroup>
 

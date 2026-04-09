@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FileProcessingCore\FileProcessingCore.csproj" />
     <ProjectReference Include="..\FileProcessingEventContracts\FileProcessingEventContracts.csproj" />
   </ItemGroup>

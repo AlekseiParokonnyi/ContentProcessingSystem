@@ -1,12 +1,18 @@
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Text.Json.Serialization;
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
+using Azure.Storage.Blobs;
 using FileProcessingApplication;
 using FileProcessingApplication.Models;
+using FileProcessingCore.IPublisher;
 using FileProcessingCore.IRepositories;
 using FileProcessingCore.IStorage;
+using FileProcessingPublisher;
 using FileProcessingRepository;
 using FileProcessingStorage;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -22,8 +28,33 @@ builder.Services.AddDbContext<FilesDbContext>(options =>
   options.UseNpgsql(
     builder.Configuration.GetConnectionString("Postgres")));
 
+builder.Services.Configure<StorageOptions>(builder.Configuration.GetSection("Storage"));
+
+builder.Services.AddSingleton(sp =>
+{
+  var options = sp.GetRequiredService<IOptions<StorageOptions>>().Value;
+  var client = new BlobContainerClient(new Uri($"https://{options.AccountName}.blob.core.windows.net/{options.ContainerName}"), new DefaultAzureCredential());
+  return client;
+});
+
+builder.Services.Configure<BusOptions>(builder.Configuration.GetSection("ServiceBus"));
+
+builder.Services.AddSingleton<ServiceBusClient>(sp =>
+{
+  var options = sp.GetRequiredService<IOptions<BusOptions>>().Value;
+  return new ServiceBusClient(options.FullyQualifiedNamespace, new DefaultAzureCredential());
+});
+
+builder.Services.AddSingleton<ServiceBusSender>(sp =>
+{
+  var options = sp.GetRequiredService<IOptions<BusOptions>>().Value;
+  var client = sp.GetRequiredService<ServiceBusClient>();
+  return client.CreateSender(options.TopicName);
+});
+
 builder.Services.AddScoped<IFileInfoRepository, FileInfoRepository>();
 builder.Services.AddScoped<IFilesStorage, FilesStorage>();
+builder.Services.AddScoped<IBusPublisher, BusPublisher>();
 builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
 
 var app = builder.Build();
@@ -48,6 +79,7 @@ filesApi.MapPost("", async (IFormFile file,
 
   return Results.Ok(result);
 })
+.DisableAntiforgery()
 .Produces(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status400BadRequest);
 
@@ -74,12 +106,12 @@ filesApi.MapGet("/{id}", async Task<Results<FileStreamHttpResult, NotFound>> (
 using (var scope = app.Services.CreateScope())
 {
   var db = scope.ServiceProvider.GetRequiredService<FilesDbContext>();
-  db.Database.Migrate();
+  await db.Database.MigrateAsync();
 }
 
 app.Run();
 
-[JsonSerializable(typeof(IEnumerable<FileJobResult>))]
+[JsonSerializable(typeof(IEnumerable<FileUploadResult>))]
 internal partial class AppJsonSerializerContext : JsonSerializerContext
 {
 }

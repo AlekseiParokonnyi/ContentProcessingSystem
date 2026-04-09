@@ -20,7 +20,7 @@ namespace FileProcessingFunction
     }
 
     [Function("FileProcessingFunction")]
-    public async Task Run([ServiceBusTrigger("file-processing", "Azure Subscription 1", Connection = "ServiceBusConnection")] string message)
+    public async Task Run([ServiceBusTrigger(topicName: "cps-files-processing-topic", subscriptionName: "FileProcessingWorker", Connection = "ServiceBusConnection")] string message)
     {
       _logger.LogInformation("Received message: {message}", message);
 

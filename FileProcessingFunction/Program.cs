@@ -1,13 +1,16 @@
-using FileProcessingFunction.Services;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FileProcessingFunction.Services;
 
-var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
-    .ConfigureServices(services =>
-    {
-      services.AddScoped<IFileProcessingService, FileProcessingService>();
-    })
-    .Build();
+var builder = FunctionsApplication.CreateBuilder(args);
 
-host.Run();
+builder.ConfigureFunctionsWebApplication();
+
+builder.Services
+    .AddApplicationInsightsTelemetryWorkerService()
+    .ConfigureFunctionsApplicationInsights()
+    .AddScoped<IFileProcessingService, FileProcessingService>();
+
+builder.Build().Run();

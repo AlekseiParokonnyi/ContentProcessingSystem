@@ -20,7 +20,7 @@ namespace FileProcessingApplication
       _busPublisher = busPublisher;
     }
 
-    public async Task<FileJobResult> StoreFileAsync(string fileName, Stream fileStream, CancellationToken cancellationToken = default)
+    public async Task<FileUploadResult> StoreFileAsync(string fileName, Stream fileStream, CancellationToken cancellationToken = default)
     {
       var fileGuid = Guid.NewGuid();
 
@@ -42,10 +42,10 @@ namespace FileProcessingApplication
         Url = fileUrl
       }, cancellationToken);
 
-      return new FileJobResult
+      return new FileUploadResult
       {
         FileInfoModel = fileInfo,
-        Status = FileStatus.Uploaded
+        Status = OperationStatus.Completed
       };
     }
 

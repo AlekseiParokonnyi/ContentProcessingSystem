@@ -2,8 +2,8 @@
 
 namespace FileProcessingApplication.Models;
 
-public class FileContentResult
+public class FileUploadResult
 {
   public FileInfoModel FileInfoModel { get; set; } = null!;
-  public Stream Content { get; set; } = null!;
+  public OperationStatus Status { get; set; }
 }
