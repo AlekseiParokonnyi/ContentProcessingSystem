@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fileprocessingapi
+  namespace: fileprocessingapi
+  labels:
+    app: fileprocessingapi
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fileprocessingapi
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0      # never kill a pod before a new one is ready
+      maxSurge: 1            # spin up 1 extra pod during deploy
+  template:
+    metadata:
+      labels:
+        app: fileprocessingapi
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: fileprocessingapi-sa
+    
+      containers:
+        - name: fileprocessingapi
+          image: fileprocessing123456.azurecr.io/fileprocessingapi:v4   # update tag on each deploy
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+
+          # --- connection strings from your Secret ---
+          envFrom:
+            - secretRef:
+                name: fileprocessing-prod-secrets              # created in previous step
+                
+          volumeMounts:
+            - name: secrets-store
+              mountPath: "/mnt/secrets"
+              readOnly: true
+
+          # --- optional extra config (non-sensitive) ---
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: ASPNETCORE_URLS
+              value: "http://+:8080"
+            - name: AZURE_CLIENT_ID
+              value: "68d44c4a-78b8-4a4c-bb3b-6a6804e97ee4"
+
+          # --- resource limits (important — stops one pod eating the node) ---
+          resources:
+            requests:
+              cpu: "100m"        # 0.1 vCPU guaranteed
+              memory: "128Mi"
+            limits:
+              cpu: "500m"        # max 0.5 vCPU
+              memory: "256Mi"
+
+          # --- health probes ---
+          readinessProbe:
+            httpGet:
+              path: /healthz     # your health check endpoint (see note below)
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 30   # give app time to start before killing it
+            periodSeconds: 20
+            failureThreshold: 3
+            
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: fileprocessing-keyvault-secrets
+
+      # --- graceful shutdown ---
+      terminationGracePeriodSeconds: 30

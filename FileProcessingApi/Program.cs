@@ -9,10 +9,10 @@ using FileProcessingCore.IStorage;
 using FileProcessingPublisher;
 using FileProcessingRepository;
 using FileProcessingStorage;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
+using FileProcessingApi;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -57,6 +57,10 @@ builder.Services.AddScoped<IFilesStorage, FilesStorage>();
 builder.Services.AddScoped<IBusPublisher, BusPublisher>();
 builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
 
+builder.Services.AddHealthChecks();
+
+builder.Services.AddApplicationInsightsTelemetry();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -64,44 +68,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-var filesApi = app.MapGroup("/files");
+app.MapHealthChecks("/healthz");
 
-filesApi.MapPost("", async (IFormFile file,
-  IFileProcessingService fileProcessingService,
-  CancellationToken ct) =>
-{
-  if (file is not { Length: not 0 })
-    return Results.BadRequest("File is empty");
-
-  await using var stream = file.OpenReadStream();
-
-  var result = await fileProcessingService.StoreFileAsync(file.FileName, stream, ct);
-
-  return Results.Ok(result);
-})
-.DisableAntiforgery()
-.Produces(StatusCodes.Status200OK)
-.Produces(StatusCodes.Status400BadRequest);
-
-filesApi.MapGet("/", (IFileProcessingService service, CancellationToken ct)
-  => service.GetAllFilesAsync(ct))
-  .Produces(StatusCodes.Status200OK);
-
-filesApi.MapGet("/{id}", async Task<Results<FileStreamHttpResult, NotFound>> (
-    Guid id,
-    IFileProcessingService fileProcessingService,
-    CancellationToken ct) =>
-  {
-    var file = await fileProcessingService.GetFileContentAsync(id, ct);
-
-    if (file is null)
-      return TypedResults.NotFound();
-
-    return TypedResults.File(file.Content, "application/octet-stream", file.FileInfoModel.FileName);
-  })
-  .WithName("GetFile")
-  .Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")
-  .Produces(StatusCodes.Status404NotFound);
+app.MapGroup("/files").MapFilesApi();
 
 using (var scope = app.Services.CreateScope())
 {

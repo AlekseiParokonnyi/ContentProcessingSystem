@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fileprocessingapi
+  namespace: fileprocessingapi
+spec:
+  type: LoadBalancer      #ClusterIP          # changed from LoadBalancer         # provisions an Azure public IP automatically
+  selector:
+    app: fileprocessingapi
+  ports:
+    - port: 80                # external port (what users hit)
+      targetPort: 8080        # internal port (what your container listens on)
+      protocol: TCP
